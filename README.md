@@ -1,10 +1,12 @@
 ## Links
 
-- [Live Link](https://deft-kelpie-0f29a9.netlify.app/)
+- [Live Link](https://ecommerce-2024-1baff.web.app/)
+- [backend repo]()
+
 
 
 ### Description
-- Gadget Heaven is a web application designed for gadget enthusiasts, allowing users to explore various products, view details, and manage items in their cart and wishlist. The site also features a dashboard for users to track statistics and interact with product data.
+- GadgetBazaar isA modern e-commerce web app for tech products like mobiles, laptops, accessories, and MacBooks. Built with React, Tailwind CSS, Context API, Firebase Authentication, and React Router, featuring custom hooks and localStorage for seamless functionality
 
 ### Technologies Used
 - **React.js**
