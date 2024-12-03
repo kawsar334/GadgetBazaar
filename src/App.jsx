@@ -16,6 +16,10 @@ import Statistics from './pages/Statistics';
 import NotFound from './pages/Notfound';
 import CartContext from './context/CartStorage';
 import Register from './pages/Register';
+import ProtectedRoute from './protectedRoutes/ProtectedRoute';
+import AdminLayout from './pages/adminLayout/AdminLayout';
+import AdminDashboard from './pages/adminLayout/AdminDashboard';
+import AdminLogin from './pages/adminLayout/AdminLogin';
 
 function App() {
 
@@ -64,7 +68,10 @@ function App() {
           path: "cart",
           element: (
             <PageTitle title="Cart Lists">
+              <ProtectedRoute>
+
               <CartPage />
+              </ProtectedRoute>
             </PageTitle>
           ),
        },
@@ -94,6 +101,30 @@ function App() {
       path: "/register",
       element: (<PageTitle title="Signup"><Register /></PageTitle>),
     },
+
+    {
+      path: "/",
+      element: <AdminLayout />,
+
+      children: [
+        {
+          path: "/admin",
+          element: (
+            <PageTitle title="Admin pannel">
+              <AdminDashboard/>
+            </PageTitle>
+          ),
+        },
+        {
+          path: "/admin/login",
+          element: (
+            <PageTitle title="signin Admin pannel">
+              <AdminLogin />
+            </PageTitle>
+          ),
+        },
+      ]
+      },
     {
       path: "*",
       element: (
@@ -102,6 +133,8 @@ function App() {
         </PageTitle>
       ),
     },
+
+    
  
   ]);
 

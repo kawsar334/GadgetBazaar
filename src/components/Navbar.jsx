@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import CartContext from '../context/CartStorage';
+import { AuthContext } from '../data/AuthProvider';
+import FetchSingleData from '../data/FetchSingleData';
 
 const Navbar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
- 
+  const {
+    user,
+    isAuthenticated,
+  } = useContext(AuthContext);
 
   const {
     cart,
@@ -14,10 +19,47 @@ const Navbar = () => {
     
   } = CartContext();
   
+  const { data, loading, error } = FetchSingleData(`https://ecommerce-backend-ecru-sigma.vercel.app/api/user/find/${user}`);
  
 
   const getActiveClass = (path) =>
     location.pathname === path ? 'bg-blue-500 bg-[purple] rounded-full' : '';
+
+
+  const handleLogout=(e)=>{
+    e.preventDefault();   
+    if (window.confirm("Are You sure Logout")){
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href="/";
+    }
+  }
+
+
+  const Links = ()=>{
+    return(
+      <>
+     {user?<>
+          <li><Link to="/" className={getActiveClass('/')}>Home</Link></li>
+          <li><Link to="/dashboard/statistics" className={getActiveClass('/dashboard/statistics')}>Statistics</Link></li>
+          <li><Link to="/dashboard/cart" className={getActiveClass('/dashboard/cart')}>Dashboard</Link></li>
+          <li><Link to="/about" className={getActiveClass('/about')}>About</Link></li>
+          <li onClick={handleLogout}><Link to="#" >Logout</Link></li>
+          <li ><Link to="/admin"  >Admin Pnnel</Link></li>
+
+          { <li ><Link to="#" >{data?.user?.name}</Link></li>}
+     </>: <>
+        <li><Link to="/" className={getActiveClass('/')}>Home</Link></li>
+        <li><Link to="/dashboard/statistics" className={getActiveClass('/dashboard/statistics')}>Statistics</Link></li>
+        <li><Link to="/dashboard/cart" className={getActiveClass('/dashboard/cart')}>Dashboard</Link></li>
+        <li><Link to="/about" className={getActiveClass('/about')}>About</Link></li>
+        <li><Link to="/login" className={getActiveClass('/login')}>Login</Link></li>
+            <li ><Link to="/admin"  >Admin Pnnel</Link></li>
+
+      </>}
+      </>
+    )
+  }
   
 
   return (
@@ -41,22 +83,14 @@ const Navbar = () => {
           <ul
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-blue border rounded-box z-[1] mt-3 w-52 p-2 shadow">
-            <li><Link to="/" className={getActiveClass('/')}>Home</Link></li>
-            <li><Link to="/dashboard/statistics" className={getActiveClass('/dashboard/statistics')}>Statistics</Link></li>
-            <li><Link to="/dashboard/cart" className={getActiveClass('/dashboard/cart')}>Dashboard</Link></li>
-            <li><Link to="/about" className={getActiveClass('/about')}>About</Link></li>
-            <li><Link to="/login" className={getActiveClass('/login')}>Login</Link></li>
+       <Links/>
           </ul>
         </div>
-        <Link to="/" className="btn btn-ghost text-xl">Gadget Heaven</Link>
+        <Link to="/" className="btn btn-ghost text-xl">GadgetBazaar</Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li><Link to="/" className={getActiveClass('/')}>Home</Link></li>
-          <li><Link to="/dashboard/statistics" className={getActiveClass('/dashboard/statistics')}>Statistics</Link></li>
-          <li><Link to="/dashboard/cart" className={getActiveClass('/dashboard/cart')}>Dashboard</Link></li>
-          <li><Link to="/about" className={getActiveClass('/about')}>About</Link></li>
-          <li><Link to="/login" className={getActiveClass('/login')}>Login</Link></li>
+          <Links />
         </ul>
       </div>
       <div className="navbar-end flex justify-center items-center gap-3">

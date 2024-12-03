@@ -1,21 +1,37 @@
 import React, { createContext, useContext, useReducer } from 'react';
 
-// Initial State
+
+
 const initialState = {
-    user: null,
-    isAuthenticated: false,
+    user: JSON.parse(localStorage.getItem('user')) || null,
+    isAuthenticated: !!localStorage.getItem('token'),
     token: null,
+    loading: false,
+    error: null,
 };
 
-// Reducer Function
 function authReducer(state, action) {
     switch (action.type) {
-        case 'LOGIN':
+        case 'LOGIN_START':
+            return {
+                ...state,
+                loading: true,
+                error: null, 
+            };
+        case 'LOGIN_SUCCESS':
             return {
                 ...state,
                 user: action.payload.user,
                 token: action.payload.token,
                 isAuthenticated: true,
+                loading: false,
+                error: null,
+            };
+        case 'LOGIN_FAILURE':
+            return {
+                ...state,
+                loading: false,
+                error: action.payload.error,
             };
         case 'LOGOUT':
             return {
@@ -23,6 +39,7 @@ function authReducer(state, action) {
                 user: null,
                 token: null,
                 isAuthenticated: false,
+                error: null,
             };
         case 'UPDATE_USER':
             return {
@@ -34,18 +51,30 @@ function authReducer(state, action) {
     }
 }
 
-// Create Context
-const AuthContext = createContext();
 
-// AuthProvider Component
-export function AuthProvider({ children }) {
+export const AuthContext = createContext();
+
+export default function AuthProvider({ children }) {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
-    const login = (user, token) => {
-        dispatch({ type: 'LOGIN', payload: { user, token } });
+    const loginStart = () => {
+        dispatch({ type: 'LOGIN_START' });
+    };
+
+    const loginSuccess = (user, token) => {
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', token);
+        dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+        
+    };
+
+    const loginFailure = (error) => {
+        dispatch({ type: 'LOGIN_FAILURE', payload: { error } });
     };
 
     const logout = () => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
         dispatch({ type: 'LOGOUT' });
     };
 
@@ -59,7 +88,11 @@ export function AuthProvider({ children }) {
                 user: state.user,
                 isAuthenticated: state.isAuthenticated,
                 token: state.token,
-                login,
+                loading: state.loading,
+                error: state.error,
+                loginStart,
+                loginSuccess,
+                loginFailure,
                 logout,
                 updateUser,
             }}
@@ -70,10 +103,10 @@ export function AuthProvider({ children }) {
 }
 
 // Custom Hook to Use Auth Context
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-}
+// export function useAuth() {
+//     const context = useContext(AuthContext);
+//     if (!context) {
+//         throw new Error('useAuth must be used within an AuthProvider');
+//     }
+//     return context;
+// }

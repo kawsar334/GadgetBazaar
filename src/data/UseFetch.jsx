@@ -9,13 +9,13 @@ const useFetch = () => {
         const fetchData = async () => {
             setLoading(true)
             try {
-                const response = await fetch("./product.json");
+                const response = await fetch("https://ecommerce-backend-ecru-sigma.vercel.app/api/product/");
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const result = await response.json();
                 setTimeout(() => {
-                    setData(result);
+                    setData(result?.products);
                     setLoading(false);
                 }, 1000);
                

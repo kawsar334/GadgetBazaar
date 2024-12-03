@@ -3,18 +3,54 @@ import done from "../assets/Group.png"
 import { toast } from "react-toastify"
 import CartContext from "../context/CartStorage"
 
-const Modal = ({ setOpenModal, totalPrice })=>{
+const Modal = ({ setOpenModal, totalPrice, cart })=>{
 
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+ 
 
-  const closeModal = ()=>{
+  const closeModal = async()=>{
+    const user = JSON.parse(localStorage.getItem('user')); 
+    if (!user) {
+      toast.error('You need to log in to complete your purchase.');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://ecommerce-backend-ecru-sigma.vercel.app/api/cart/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user,
+          products: cart,
+          totalPrice,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success('Purchase completed successfully!');
+        setTimeout(() => {
+          setOpenModal(false)
+          localStorage.removeItem("cart");
+          localStorage.removeItem("wislist");
+          navigate('/'); // Redirect to home page
+        }, 2000);
+      } else {
+        toast.error(data.error || 'Failed to complete purchase.');
+      }
+    } catch (error) {
+      console.error('Error saving cart:', error);
+      toast.error('An error occurred while completing your purchase.');
+    }
       
-    setOpenModal(false)
-    localStorage.removeItem("cart");
-    localStorage.removeItem("wislist");
-    navigate('/');
-    toast.success('Payment Successful!')
+    // setOpenModal(false)
+    // localStorage.removeItem("cart");
+    // localStorage.removeItem("wislist");
+    // navigate('/');
+    // toast.success('Payment Successful!')
 
   }
 

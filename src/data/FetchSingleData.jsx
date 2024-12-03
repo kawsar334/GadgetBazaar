@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
 
-function useFetch(url) {
-  const [data, setData] = useState(null);
+function FetchSingleData(url) {
+  const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          method: 'GET',
+          credentials: 'include', 
+          headers: {
+            'Content-Type': 'application/json', 
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -27,4 +33,4 @@ function useFetch(url) {
   return { data, loading, error };
 }
 
-export default useFetch;
+export default FetchSingleData;
